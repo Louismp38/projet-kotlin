@@ -1,0 +1,22 @@
+package com.autoecole.models
+
+import org.jetbrains.exposed.sql.Table
+import kotlinx.serialization.Serializable
+
+object Students : Table() {
+    val id = integer("id").autoIncrement()
+    val name = varchar("name", 255)
+    val contact = varchar("contact", 255)
+    val licenseType = varchar("license_type", 50)
+    val registrationDate = date("registration_date")
+    override val primaryKey = PrimaryKey(id)
+}
+
+@Serializable
+data class Student(
+    val id: Int? = null,
+    val name: String,
+    val contact: String,
+    val licenseType: String,
+    val registrationDate: String
+)
