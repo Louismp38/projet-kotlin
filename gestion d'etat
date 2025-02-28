@@ -1,0 +1,26 @@
+class StudentViewModel(private val apiService: ApiService) : ViewModel() {
+    private val _students = MutableStateFlow<List<Student>>(emptyList())
+    val students: StateFlow<List<Student>> = _students
+
+    fun fetchStudents(token: String) {
+        viewModelScope.launch {
+            try {
+                val studentList = apiService.getStudents("Bearer $token")
+                _students.value = studentList
+            } catch (e: Exception) {
+                // Gérer l'erreur
+            }
+        }
+    }
+
+    fun addStudent(token: String, student: Student) {
+        viewModelScope.launch {
+            try {
+                apiService.addStudent("Bearer $token", student)
+                fetchStudents(token) // Rafraîchir la liste après l'ajout
+            } catch (e: Exception) {
+                // Gérer l'erreur
+            }
+        }
+    }
+}
