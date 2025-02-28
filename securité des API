@@ -1,0 +1,35 @@
+implementation("io.ktor:ktor-server-auth:2.3.4")
+implementation("io.ktor:ktor-server-auth-jwt:2.3.4")
+install(Authentication) {
+    jwt("auth-jwt") {
+        realm = "autoecole"
+        verifier(JwtConfig.verifier)
+        validate {
+            if (it.payload.getClaim("id").asInt() != null) JWTPrincipal(it.payload) else null
+        }
+    }
+}
+object JwtConfig {
+    private const val secret = "secret"
+    private const val issuer = "com.autoecole"
+    private const val validityInMs = 36_000_00 * 10 // 10 heures
+
+    val algorithm = Algorithm.HMAC512(secret)
+
+    val verifier: JWTVerifier = JWT
+        .require(algorithm)
+        .withIssuer(issuer)
+        .build()
+
+    fun generateToken(userId: Int): String = JWT.create()
+        .withIssuer(issuer)
+        .withClaim("id", userId)
+        .withExpiresAt(Date(System.currentTimeMillis() + validityInMs))
+        .sign(algorithm)
+}
+routing {
+    authenticate("auth-jwt") {
+        studentRoutes()
+        // Autres routes protégées
+    }
+}
