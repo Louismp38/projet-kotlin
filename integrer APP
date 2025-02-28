@@ -1,0 +1,15 @@
+val retrofit = Retrofit.Builder()
+    .baseUrl("http://10.0.2.2:8080/") // Pour l'émulateur Android
+    .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+    .build()
+
+interface ApiService {
+    @GET("students")
+    suspend fun getStudents(@Header("Authorization") token: String): List<Student>
+
+    @POST("students")
+    suspend fun addStudent(
+        @Header("Authorization") token: String,
+        @Body student: Student
+    ): Response<Unit>
+}
